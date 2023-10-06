@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @EnableWebSecurity
 public class SecurityConfig {
@@ -32,6 +33,8 @@ public class SecurityConfig {
 						.requestMatchers("/login").permitAll()
 						.anyRequest().authenticated() 
 				)
+				.exceptionHandling( exc -> exc
+						.authenticationEntryPoint( new LoginUrlAuthenticationEntryPoint("/loginEntryPoint") ))  
 				
 				.build();
 	}

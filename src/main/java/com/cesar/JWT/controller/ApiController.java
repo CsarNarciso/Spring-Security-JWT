@@ -12,8 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiController {
 
 	
-	@PostMapping
-	ResponseEntity<?> login(@RequestBody Map<String, String> credentials){
+	
+	@GetMapping("/login")
+	ResponseEntity<?> login(){
+		
+		return ResponseEntity.ok( "Login entry point." );
+	}
+	
+	
+	@PostMapping("/authenticate")
+	ResponseEntity<?> authenticate(@RequestBody Map<String, String> credentials){
 		
 		return ResponseEntity.ok( "Successful authenticated with JWT." );
 	}
