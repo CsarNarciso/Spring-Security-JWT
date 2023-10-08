@@ -3,7 +3,6 @@ package com.cesar.JWT.security.jwt;
 import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
@@ -17,21 +16,21 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 public class JwtUtils {
 
 	
-	public String generateToken(Authentication auth) throws JWTCreationException {
+	public String generateToken(String authUsername) throws JWTCreationException {
 		
 		return JWT.create()
 				.withIssuer( "Csar" ) //Token provider (company, server)
 				.withIssuedAt( Instant.now() ) 
 				.withExpiresAt( Instant.now().plusMillis( timeExpiration ))
-				.withClaim( "username", auth.getName() )
-				.sign( algorithm );
+				.withClaim( "username", authUsername )
+				.sign( Algorithm.HMAC256( secret.getBytes() ));
 	}
 	
 	
 	
 	public String verifyTokenAndGetUsername(String token) throws JWTVerificationException {
 		
-		JWTVerifier verifier = JWT.require( algorithm )
+		JWTVerifier verifier = JWT.require( Algorithm.HMAC256( secret.getBytes() ))
 				.withIssuer( "Csar" )
 				.build();
 		
@@ -53,7 +52,5 @@ public class JwtUtils {
 	private String secret;
 	
 	@Value("${jwt.timeExpiration}")
-	private Long timeExpiration;
-	
-	private Algorithm algorithm = Algorithm.HMAC256( secret.getBytes() );
+	private Long timeExpiration;	
 }
