@@ -1,6 +1,5 @@
 package com.cesar.JWT.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,9 +13,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.cesar.JWT.security.filters.JwtAuthenticationFilter;
-import com.cesar.JWT.security.jwt.JwtUtils;
+import com.cesar.JWT.security.filters.JwtAuthorizationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -25,11 +25,11 @@ public class SecurityConfig {
 	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-		
-		
-		JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils);
+				
+		JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter();
 		jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);		
-		jwtAuthenticationFilter.setFilterProcessesUrl("/login");
+		
+		JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter();
 		
 		
 		return http
@@ -45,6 +45,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/access").authenticated()
 				)
 				.addFilter( jwtAuthenticationFilter )
+				.addFilterBefore( jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class )
 				
 				.build();
 	}
@@ -78,8 +79,5 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();	
 	}
 	
-	
-	
-	@Autowired
-	private JwtUtils jwtUtils;
+		
 }
